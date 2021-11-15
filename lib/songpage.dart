@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:audioplayers/audio_cache.dart';
 class SongInfo {
   String songName;
   String songPath;
@@ -12,32 +11,51 @@ class SongInfo {
  class Songpage extends StatefulWidget {
   SongInfo song;
   Songpage({Key? key,required this.song}) : super(key: key);
-
   @override
+
   _SongpageState createState() => _SongpageState();
 }
 
 class _SongpageState extends State<Songpage> {
-  void seekTosec(int sec){
+  AudioPlayer _player= AudioPlayer();
+  AudioCache cache = AudioCache();
+  void initState() {
+   super.initState();
+  _player = AudioPlayer();
+   cache = AudioCache(fixedPlayer:_player);
+  _player.onDurationChanged.listen((d) {
+    setState(() {
+      musicLength = d;
+    });
+  });
+  _player.onAudioPositionChanged.listen((p) {
+    setState(() {
+      position = p;
+    });
+  });
+}
+  bool playing=false;
+  IconData playBtn= Icons.play_arrow;
+  Duration position= new Duration();
+  Duration musicLength= new Duration();
+  Widget slider(){
+    return Container(
+        width:300,
+        child: Slider.adaptive(
+            activeColor: Colors.black,
+            inactiveColor: Colors.grey,
+            value: position.inSeconds.toDouble(),
+            max:musicLength.inSeconds.toDouble(),
+        onChanged: (value){
+      seekTosec(value.toInt());
+    }),
+    );
+  }
+  void seekTosec(int sec) {
     Duration newPos = Duration(seconds: sec);
     _player.seek(newPos);
   }
-  void initState()
-  {
-    super.initState();
-    _player=AudioPlayer();
-    cache= AudioCache(fixedPlayer: _player);
-    _player.onDurationChanged.listen((d)){
-      musicLength=d;
-    }
-  };
-  bool playing=false;
-  IconData playBtn= Icons.play_arrow;
 
-  AudioPlayer _player;
-  AudioCache cache;
-  Duration position= new Duration();
-  Duration MusicLength= new Duration();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -90,20 +108,12 @@ class _SongpageState extends State<Songpage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      "${position.inMinutes}:${position.inSeconds.remainder(60)}",
+                      "${position.inMinutes}:${musicLength.inSeconds.remainder(60)}",
                       style: TextStyle(
                         fontSize: 18.0,
                       ),
                     ),
-                 slider.adaptive(
-                      activeColor: Colors.black;
-                        activeColor: Colors.grey;
-                        value: position.inseconds.toDouble();
-                        onChange(value){
-                          seekTosec(value.to/int());
-                    }
-                    ),
-
+                     slider(),
                     Text(
                       "${musicLength.inMinutes}:${musicLength.inSeconds.remainder(60)}",
                       style: TextStyle(
@@ -129,10 +139,8 @@ class _SongpageState extends State<Songpage> {
                     iconSize: 62.0,
                     color: Colors.blue[800],
                     onPressed: () {
-                      //here we will add the functionality of the play button
                       if (!playing) {
-                        //now let's play the song
-                        cache.play("gg.mp3");
+                        cache.play("assests/shapeofyou.mp3");
                         setState(() {
                           playBtn = Icons.pause;
                           playing = true;
@@ -166,7 +174,8 @@ class _SongpageState extends State<Songpage> {
       ),
     );
   }
-}
+    }
+
 
 
 
