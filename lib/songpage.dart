@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayers/src/audio_cache.dart';
 class SongInfo {
   String songName;
   String songPath;
@@ -42,8 +43,8 @@ class _SongpageState extends State<Songpage> {
     return Container(
         width:300,
         child: Slider.adaptive(
-            activeColor: Colors.black,
-            inactiveColor: Colors.grey,
+            activeColor: Colors.blueAccent,
+            inactiveColor: Colors.blueGrey,
             value: position.inSeconds.toDouble(),
             max:musicLength.inSeconds.toDouble(),
         onChanged: (value){
@@ -129,7 +130,7 @@ class _SongpageState extends State<Songpage> {
                 children: [
                   IconButton(
                     iconSize: 45.0,
-                    color: Colors.blue,
+                    color: Colors.white54,
                     onPressed: () {},
                     icon: Icon(
                       Icons.skip_previous,
@@ -137,10 +138,10 @@ class _SongpageState extends State<Songpage> {
                   ),
                   IconButton(
                     iconSize: 62.0,
-                    color: Colors.blue[800],
+                    color: Colors.white,
                     onPressed: () {
                       if (!playing) {
-                        cache.play("assests/shapeofyou.mp3");
+                        cache.play(widget.song.songPath);
                         setState(() {
                           playBtn = Icons.pause;
                           playing = true;
@@ -159,7 +160,7 @@ class _SongpageState extends State<Songpage> {
                   ),
                   IconButton(
                     iconSize: 45.0,
-                    color: Colors.blue,
+                    color: Colors.white54,
                     onPressed: () {},
                     icon: Icon(
                       Icons.skip_next,
